@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Scanner;
@@ -13,8 +14,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-
 
 public class crawler {
 	public static String crawl(String link) {
@@ -46,7 +45,7 @@ public class crawler {
 			for(String s : titlesplit) {
 				newTitle = newTitle+" "+s;
 			}
-			File f = new File("WebPages//"+newTitle+".txt");
+			File f = new File("src//WebPages//"+newTitle+".txt");
 			f.createNewFile();			
 			PrintWriter pw = new PrintWriter(f);
 			pw.println(link);
@@ -83,7 +82,7 @@ public class crawler {
 		
 		try {
 
-			File f = new File("CrawledPages.txt");
+			File f = new File("src//WebPages//CrawledPages.txt");
 			f.createNewFile();
 			FileWriter fwt = new FileWriter(f);
 			fwt.close();
@@ -176,14 +175,39 @@ public class crawler {
 			"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Hello, Welcome to Our Web Search Engine ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		System.out.println(
 				"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		System.out.println("");
-		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ WEB CRAWLER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		System.out.println("");
-		String custom_url = null;
+		System.out.println("Press 1. Web Crwaling");
+		System.out.println("Press 2. Domain Extractor");
+		System.out.println("Press 3. Auto suggestion");
 		Scanner scan = new Scanner(System.in);
-		System.out.println("Please enter the URL below to begin crawling.");
-		custom_url = scan.nextLine();
-		crawlCustom(custom_url);
-
+		System.out.println("Please enter the number to perfom operation");
+		int num = scan.nextInt();
+		switch(num) {
+		case 1:
+			Scanner sc = new Scanner(System.in);
+			System.out.println("");
+			System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ WEB CRAWLER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+			System.out.println("");
+			System.out.println();
+			String custom_url = null;
+			System.out.println("Please enter the URL below to begin crawling.");
+			custom_url = sc.nextLine();
+			crawlCustom(custom_url);
+			break;
+		case 2:
+			System.out.println("You'r selected Domain Extractor:");
+			try {
+				DomainExtractor.DoaminExtractor();
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+			break;
+		case 3:
+			System.out.println("You'r selected Auto Suggestion feature:");
+			Trie.autoSuggest();
+			break;
+		default:
+			System.out.println("Please selecte any value from the menu to perfom operation:");
+		}
+		
 	}
 }
