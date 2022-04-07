@@ -8,22 +8,25 @@ import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Scanner;
+
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+
 public class crawler {
-	public static String crawl(String link) {
+public static String crawl(String link) {
 		
 		
 		String html = urlToHTML(link);
 		
-		Document doc = Jsoup.parse(html);
-		String text = doc.text();
-		String title = doc.title();
+		Document doc = Jsoup.parse(html);  //
+		String text = doc.text(); //used to find text
+		String title = doc.title(); //used to find title
 		createFile(title,text,link);
 		
 		Elements e = doc.select("a");
@@ -38,16 +41,18 @@ public class crawler {
 		}
 		return links;
 	}
-	public static void createFile(String title,String text,String link) {
+	
+	//This method is used create textfile 
+	public static void createFile(String title, String text, String link) {
 		try {
 			String[] titlesplit = title.split("\\|");
 			String newTitle = "";
 			for(String s : titlesplit) {
 				newTitle = newTitle+" "+s;
 			}
-			File f = new File("src//WebPages//"+newTitle+".txt");
+			File f = new File("src//TxtFiles//"+newTitle+".txt");
 			f.createNewFile();			
-			PrintWriter pw = new PrintWriter(f);
+			PrintWriter pw = new PrintWriter(f); 
 			pw.println(link);
 			pw.println(text);
 			pw.close();
@@ -56,25 +61,24 @@ public class crawler {
 		
 	}
 	
-	public static String urlToHTML(String link){
+	//This method is used to convert url to HTML
+	public static String urlToHTML(String link){  //this method will take link(url) as an argument
 		try {
-			URL url = new URL(link);
-			URLConnection conn = url.openConnection();
-			conn.setConnectTimeout(5000);
-			conn.setReadTimeout(5000);
-			Scanner sc = new Scanner(conn.getInputStream());
-			StringBuffer sb = new StringBuffer();
+			URL url = new URL(link);  //Creating URL classes's object
+			URLConnection connection = url.openConnection(); //Returns a URLConnection instance that represents a connection to the remote object referred to by the URL.
+			connection.setConnectTimeout(5000); //5 milliseconds
+			connection.setReadTimeout(5000);
+			Scanner sc = new Scanner(connection.getInputStream());
+			StringBuffer stringBuffer = new StringBuffer();
 			while(sc.hasNext()) {
-				sb.append(" "+sc.next());
+				stringBuffer.append(" "+sc.next());
 			}
 			
-			String result = sb.toString();
+			String result = stringBuffer.toString();
 			sc.close();
 			return result;
 		}
-		catch(IOException e) {
-			
-		} 
+		catch(IOException e) {} 
 		return link;
 	}
 	
@@ -82,17 +86,17 @@ public class crawler {
 		
 		try {
 
-			File f = new File("src//WebPages//CrawledPages.txt");
-			f.createNewFile();
-			FileWriter fwt = new FileWriter(f);
+			File crawledURLs = new File("src//TxtFiles//CrawledURLs.txt");
+			crawledURLs.createNewFile();
+			FileWriter fwt = new FileWriter(crawledURLs);
 			fwt.close();
 						
 			String links2 = "";
 			for(String link: links.split("\n")) {
 				
-				links2 = links2 + crawl(link);
+				links2 = links2 + crawl(link); 
 				System.out.println(link);				
-				FileWriter fw = new FileWriter(f,true);
+				FileWriter fw = new FileWriter(crawledURLs,true);
 				fw.write(link + "\n");
 				
 				fw.close();
@@ -101,113 +105,154 @@ public class crawler {
 			}
 			
 			String links3 = "";
-			int counter = 0;
+//			int counter = 0;
 			for(String link: links2.split("\n")) {
 
-				In in = new In(f);
+				In in = new In(crawledURLs);
 				String linksRead = in.readAll();
 				if(!linksRead.contains(link)) {
 					links3 = links3 + crawl(link);
 					System.out.println(link);
-					FileWriter fw = new FileWriter(f,true);
+					FileWriter fw = new FileWriter(crawledURLs,true);
+					fw.write(link + "\n");
+					fw.close();
+					
+//					counter++;
+//					if(counter == 40) {
+//						System.out.println("");
+//						System.out.println("WEB CRAWLING FINISHED");
+//						System.out.println("");
+//						break;
+//					} 
+				}		
+				
+			}
+			
+			int counter = 0;
+			for(String link: links3.split("\n")) {
+				In in = new In(crawledURLs);
+				String linksRead = in.readAll();
+				if(!linksRead.contains(link)) {
+					crawl(link);
+					System.out.println(link);
+					FileWriter fw = new FileWriter(crawledURLs,true);
 					fw.write(link + "\n");
 					fw.close();
 					
 					counter++;
-					if(counter == 20) {
+					if(counter == 50) {
 						System.out.println("");
 						System.out.println("WEB CRAWLING FINISHED");
 						System.out.println("");
 						break;
-					}
-				}		
+					} 
+				}
+				//System.out.println(link);				
 				
 			}
-//			int counter = 0;
-//			for(String link: links3.split("\n")) {
-//
-//				In in = new In(f);
-//				String linksRead = in.readAll();
-//				if(!linksRead.contains(link)) {
-//					crawl(link);
-//					System.out.println(link);
-//					FileWriter fw = new FileWriter(f,true);
-//					fw.write(link + "\n");
-//					fw.close();
-//					System.out.println("FOr loop three end");
-//					counter++;
-//					if(counter == 50) {
-//						break;
-//					}
-//				}
-//				//System.out.println(link);				
-//				
-//			}
+
 		
 		}
 		catch(Exception e) {e.printStackTrace();}
 	}
 	
-//	public static void crawlDefault() {
-//		String links="https://www.cbc.ca/"+"\n"+"https://www.bbc.com/news/world/us_and_canada"+"\n"+"https://www.ctvnews.ca/"+"\n"+"https://www.cicnews.com/";
-//		crawlPages(links);
-//	}
-	public static void crawlCustom(String line) {
+
+	
+	//This method is used to crawl custom url link
+	public static void crawlURL(String line) {  //Here this method takes url as argument
 		String[] links = line.split(" ");
 		String newLine = "";
-		for(String link : links) {
+		for(String link : links) {              
 			newLine = newLine + link + "\n";
 		}
 		crawlPages(newLine);
 	}
 	
-	public static void wipeWebPages() {
-		File directory = new File("WebPages");
-		File files[] = directory.listFiles();
+	//This method is used to delete all the previous crawler link files stored in folder WebPages
+	public static void deletePreviousTextFiles() {
+		File directory = new File("TextFiles");  
+		File files[] = directory.listFiles();  //storing all the crawled link files in files[] array
 		for (File f : files) {
 			f.delete();
 		}
-		System.out.println("WebPages wiped!");
 	}
-	
+
 	public static void main(String[] args) {
 		System.out.println(
-			"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Hello, Welcome to Our Web Search Engine ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+				"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Hello, Welcome to Our Web Search Engine ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		System.out.println(
 				"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-		System.out.println("Press 1. Web Crwaling");
-		System.out.println("Press 2. Domain Extractor");
-		System.out.println("Press 3. Auto suggestion");
-		Scanner scan = new Scanner(System.in);
-		System.out.println("Please enter the number to perfom operation");
-		int num = scan.nextInt();
-		switch(num) {
-		case 1:
-			Scanner sc = new Scanner(System.in);
-			System.out.println("");
-			System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ WEB CRAWLER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-			System.out.println("");
-			System.out.println();
-			String custom_url = null;
-			System.out.println("Please enter the URL below to begin crawling.");
-			custom_url = sc.nextLine();
-			crawlCustom(custom_url);
-			break;
-		case 2:
-			System.out.println("You'r selected Domain Extractor:");
-			try {
-				DomainExtractor.DoaminExtractor();
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
+		System.out.println("1. Web Crawling");
+		System.out.println("2. Domain Extractor");
+		System.out.println("3. Auto suggestion");
+		System.out.println("4. Search Function");
+		System.out.println("5. Pattern Matching");
+		System.out.println("6. Spell Checking");
+		try (Scanner scan = new Scanner(System.in)) {
+			System.out.println("Please enter the number to perfom operation");
+			int num = scan.nextInt();
+			switch (num) {
+			case 1:
+				Scanner sc = new Scanner(System.in);
+				System.out.println("");
+				System.out.println(
+						"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ WEB CRAWLER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+				System.out.println("");
+				System.out.println();
+				String custom_url = null;
+				System.out.println("Please enter the URL below to begin crawling.");
+				custom_url = sc.nextLine();
+				crawlURL(custom_url);
+				break;
+			case 2:
+				System.out.println("You've selected Domain Extractor:");
+				try {
+					DomainExtractor.DoaminExtractor();
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
+				break;
+			case 3:
+				System.out.println("You've selected Auto Suggestion feature:");
+				Trie.autoSuggest();
+				break;
+				
+			case 4:
+				System.out.println("Please enter Search Query");
+				Scanner sc1 = new Scanner(System.in);
+			    String key = sc1.nextLine();
+			    System.out.println("------------------Search Result-------------------");
+			    File folder = new File("src\\TxtFiles\\");
+	            File[] listOfFiles = folder.listFiles();
+	            ArrayList<String> files = new ArrayList<String>();
+	            for (File file : listOfFiles) {
+	                if (file.isFile()) {
+	                	   int i=0;
+	                       files.add(file.getName());
+	                       i++;          
+	                }
+	            }
+	            try {
+				SortResults.FrqBuilder(files, key.toLowerCase());
+	            }
+	            catch(IndexOutOfBoundsException e)
+	            {
+	            	e.printStackTrace();
+	            }
+				
+				break;
+			case 5:
+				PatternMatching.patternmatching();
+				break;
+			case 6:
+				SpellChecker.spellchecker();
+				break;	
+			default:
+				System.out.println("Please select any value from the menu to perfom operation:");
 			}
-			break;
-		case 3:
-			System.out.println("You'r selected Auto Suggestion feature:");
-			Trie.autoSuggest();
-			break;
-		default:
-			System.out.println("Please selecte any value from the menu to perfom operation:");
+		} catch (Exception e) {
+			System.out.println("Input MisMatch:" + e + e.getMessage());
 		}
-		
+
 	}
 }

@@ -2,13 +2,13 @@ package webCrawler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DomainExtractor {
+
 	public static String extractDomain(String val) {
 
 		boolean exclude = false;
@@ -30,18 +30,16 @@ public class DomainExtractor {
 	}
 
 	public static void DoaminExtractor() throws URISyntaxException {
-		File file = new File("src\\WebPages\\CrawledPages.txt");
+		File file = new File("src\\TxtFiles\\CrawledURLs.txt");
 		Scanner myReader = null;
 		try {
 			myReader = new Scanner(file);
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
-				URI uri = new URI(data);
-			    String domain = uri.getHost();
-			    String val = domain.startsWith("www.") ? domain.substring(4) : domain;
-			    System.out.println(val);
-//				String val = extractDomain(data);
-//				System.out.println("URL :" + data + " Domain :" + val);
+				char end = '/';
+				String url = data + end;
+				String domain = extractDomain(url);
+				System.out.println("Domain :" + domain);
 			}
 			myReader.close();
 		} catch (FileNotFoundException e) {

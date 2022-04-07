@@ -51,21 +51,6 @@ public class Trie {
 		}
 	}
 
-	public boolean find(String pre, boolean e) {
-		TrieNode lastNode = r;
-		for (char c : pre.toCharArray()) {
-			lastNode = lastNode.children.get(c);
-			if (lastNode == null) {
-				return false;
-			}
-		}
-		return !e || lastNode.isWordComplete;
-	}
-
-	public boolean find(String pre) {
-		return find(pre, false);
-	}
-
 	public void suggestHelper(TrieNode r, List<String> list, StringBuffer cur) {
 		if (r.isWordComplete) {
 			list.add(cur.toString());
@@ -98,18 +83,28 @@ public class Trie {
 	public static void autoSuggest() {
 
 		try {
-			File myObj = new File("src\\WebPages\\ Blackboard Learn.txt");
-			Scanner input = new Scanner(myObj);
+			File folder = new File("src\\TxtFiles\\");
+			File[] listOfFiles = folder.listFiles();
 			List<String> words = new ArrayList<String>();
-			while (input.hasNext()) {
-				String word = input.next();
-				words.add(word);
+			for (File file : listOfFiles) {
+				if (file.isFile()) {
+					try (Scanner input = new Scanner(file)) {
+						while (input.hasNext()) {
+							String word = input.next();
+							words.add(word);
+						}
+					}
+				}
 			}
 			Trie trie = new Trie(words);
-			Scanner scan = new Scanner(System.in);
-			System.out.println("Please provide letters .............");
-			String s = scan.next();
-			System.out.println(trie.suggest(s));
+			try (Scanner scan = new Scanner(System.in)) {
+				System.out.println("Please provide letters .............");
+				String s = scan.next();
+				List<String> relevantWord = trie.suggest(s);
+				for (String string : relevantWord) {
+					System.out.println(string);
+				}
+			}
 		} catch (FileNotFoundException e) {
 			System.out.println("Exception : " + e + e.getMessage());
 		}
