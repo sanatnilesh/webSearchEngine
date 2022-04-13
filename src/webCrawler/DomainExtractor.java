@@ -10,20 +10,13 @@ import java.util.regex.Pattern;
 public class DomainExtractor {
 
 	public static String extractDomain(String val) {
-
-		// TODO Auto-generated method stub
-		Pattern pattern = Pattern.compile("/^(?:https?:\\/\\/)?(?:[^@\\n]+@)?(?:www\\.)?([^:\\/\\n?]+)/");
-		Matcher matcher = pattern.matcher(val);
-		if (matcher.find()) {
-			val = matcher.group(1);
-		}
 		int dot = val.indexOf("/");
 		int slash = val.indexOf("/", dot + 1);
 		dot = val.indexOf("/", slash + 1);
 		val = val.substring(slash + 1, dot);
 		return val;
 	}
-
+	
 	public static void DoaminExtractor() throws URISyntaxException {
 		File file = new File("src\\TxtFiles\\CrawledURLs.txt");
 		Scanner myReader = null;
