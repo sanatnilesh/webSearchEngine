@@ -11,16 +11,11 @@ public class DomainExtractor {
 
 	public static String extractDomain(String val) {
 
-		boolean exclude = false;
 		// TODO Auto-generated method stub
 		Pattern pattern = Pattern.compile("/^(?:https?:\\/\\/)?(?:[^@\\n]+@)?(?:www\\.)?([^:\\/\\n?]+)/");
 		Matcher matcher = pattern.matcher(val);
 		if (matcher.find()) {
 			val = matcher.group(1);
-		}
-		if (exclude) {
-			int d = val.indexOf("&");
-			val = val.substring(0, d);
 		}
 		int dot = val.indexOf("/");
 		int slash = val.indexOf("/", dot + 1);
