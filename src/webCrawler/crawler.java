@@ -237,7 +237,7 @@ public static String crawl(String link) {
 	            }
 	            catch(IndexOutOfBoundsException e)
 	            {
-	            	e.printStackTrace();
+	            	System.out.println("No Results Found");
 	            }
 				
 				break;
